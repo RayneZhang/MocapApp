@@ -7,6 +7,7 @@ namespace QualisysRealTime.Unity
 {
     public class RTMarkerStream : MonoBehaviour
     {
+        
         private List<LabeledMarker> markerData;
         private RTClient rtClient;
         private GameObject markerRoot;
@@ -19,12 +20,16 @@ namespace QualisysRealTime.Unity
 
         private bool streaming = false;
 
+        Camera m_MainCamera;
+
+
         // Use this for initialization
         void Start()
         {
             rtClient = RTClient.GetInstance();
             markers = new List<GameObject>();
             markerRoot = gameObject;
+            m_MainCamera = Camera.main;
         }
 
 
@@ -42,6 +47,15 @@ namespace QualisysRealTime.Unity
             {
                 GameObject newMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 newMarker.name = markerData[i].Label;
+                if (newMarker.name == "R_wrist")
+                {
+                    newMarker.AddComponent<MovementControls>();
+                    newMarker.GetComponent<MovementControls>().maincamera = GameObject.Find("Main Camera");
+                }
+                if (newMarker.name == "L_shoulder") {
+                    newMarker.AddComponent<RotationMovement>();
+                    newMarker.GetComponent<RotationMovement>().maincamera = GameObject.Find("Main Camera");
+                }
                 newMarker.transform.parent = markerRoot.transform;
                 newMarker.transform.localScale = Vector3.one * markerScale;
                 newMarker.SetActive(false);
